@@ -67,32 +67,30 @@ jobs:
           IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/react-app
           docker push $IMAGE_NAME:latest
 
-      # 1️⃣1️⃣ Deploy to EC2 using classic RSA PEM key
-      - name: Deploy to EC2
+      # Debug EC2 connection
+      - name: Debug EC2 Info
         run: |
-          # Write PEM private key safely
-          printf "%s\n" "${{ secrets.EC2_SSH_KEY }}" > mykey.pem
-          chmod 600 mykey.pem
+          echo "EC2 IP: $EC2_IP"
+          ping -c 3 $EC2_IP || echo "Ping failed"
 
-          # SSH into EC2 and deploy Docker container
-          ssh -o StrictHostKeyChecking=no -i mykey.pem ubuntu@$EC2_IP << 'EOF'
-            # Install Docker if missing
-            if ! command -v docker &> /dev/null; then
-              sudo apt update
-              sudo apt install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-            fi
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.EC2_IP }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          timeout: 30s
+          command_timeout: 5m
+          script: |
+            sudo apt update
+            sudo apt install -y docker.io
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            docker stop react-app || true
+            docker rm react-app || true
+            docker pull ${{ secrets.DOCKER_USERNAME }}/react-app:latest
+            docker run -d -p 80:80 --name react-app ${{ secrets.DOCKER_USERNAME }}/react-app:latest
 
-            # Stop and remove old container safely
-            docker stop react-app 2>/dev/null || true
-            docker rm react-app 2>/dev/null || true
-
-            # Pull new image and run
-            IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/react-app:latest
-            docker pull $IMAGE_NAME
-            docker run -d -p 80:80 --name react-app $IMAGE_NAME
-          EOF
 
       # 1️⃣2️⃣ Print Application URL
       - name: Print Application URL

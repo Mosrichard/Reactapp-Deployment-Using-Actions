@@ -1,0 +1,5 @@
+region_value = "ap-south-1"
+ami_value = "ami-019715e0d74f695be"
+instance_type_value = "t3.micro"
+Key_pair = "terraform"
+server_name = "react_cicd"

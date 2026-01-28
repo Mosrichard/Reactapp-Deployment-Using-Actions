@@ -84,3 +84,30 @@ dist
 # Temporary folders
 tmp/
 temp/
+
+# Terraform files
+# Local Terraform state
+*.tfstate
+*.tfstate.backup
+*.tfstate.*
+
+# Terraform crash logs
+crash.log
+crash.*.log
+
+# Local override files (personal tweaks)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform local directory with provider plugins
+.terraform/
+
+# Terraform lock / config files (optional: can push if needed)
+.terraform.lock.hcl    
+.terraformrc           
+terraform.rc           
+
+# Variable files with sensitive info
+*.tfvars.json

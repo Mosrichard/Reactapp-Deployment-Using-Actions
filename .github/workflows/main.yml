@@ -67,11 +67,11 @@ jobs:
           IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/react-app
           docker push $IMAGE_NAME:latest
 
-      # 1️⃣1️⃣ Deploy to EC2 via ssh -i
+      # 1️⃣1️⃣ Deploy to EC2 via SSH
       - name: Deploy to EC2
         run: |
-          # Save SSH key from secrets
-          echo "${{ secrets.EC2_SSH_KEY }}" > mykey.pem
+          # Save SSH key safely with proper line breaks
+          printf "%s\n" "${{ secrets.EC2_SSH_KEY }}" > mykey.pem
           chmod 600 mykey.pem
 
           # Deploy Docker container on EC2

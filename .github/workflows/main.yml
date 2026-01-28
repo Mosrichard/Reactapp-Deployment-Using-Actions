@@ -67,15 +67,15 @@ jobs:
           IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/react-app
           docker push $IMAGE_NAME:latest
 
-      # 1️⃣1️⃣ Deploy to EC2
+      # 1️⃣1️⃣ Deploy to EC2 via ssh -i
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: $EC2_IP                
-          username: ubuntu               
-          key: ${{ secrets.EC2_SSH_KEY }} 
-          port: 22
-          script: |
+        run: |
+          # Save SSH key from secrets
+          echo "${{ secrets.EC2_SSH_KEY }}" > mykey.pem
+          chmod 600 mykey.pem
+
+          # Deploy Docker container on EC2
+          ssh -o StrictHostKeyChecking=no -i mykey.pem ubuntu@$EC2_IP << 'EOF'
             # Install Docker if missing
             if ! command -v docker &> /dev/null; then
               sudo apt update
@@ -92,6 +92,7 @@ jobs:
             IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/react-app:latest
             docker pull $IMAGE_NAME
             docker run -d -p 80:80 --name react-app $IMAGE_NAME
+          EOF
 
       # 1️⃣2️⃣ Print Application URL
       - name: Print Application URL

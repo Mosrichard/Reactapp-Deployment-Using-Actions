@@ -17,3 +17,5 @@ variable "Key_pair" {
 variable "server_name" {
   description = "Server name" 
 }
+
+

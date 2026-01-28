@@ -1,6 +1,9 @@
+data "aws_vpc" "default" {
+  default = true
+}
 data "aws_security_group" "default" {
   name   = "default"
-  vpc_id = aws_vpc.vpc.id
+  vpc_id = data.aws_vpc.default.id
 }
 resource "aws_security_group_rule" "allow_http_default_sg" {
   type              = "ingress"
@@ -23,4 +26,8 @@ resource "aws_instance" "webserver" {
   tags = {
     Name = var.server_name
   }
+}
+
+resource "aws_s3_bucket" "s3_bucket" {
+    bucket = "backend-statefile-tf-github-actions-cicd"
 }

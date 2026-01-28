@@ -12,7 +12,7 @@ jobs:
       AWS_REGION: ap-south-1
 
     steps:
-      # 1️⃣ Checkout Code
+      # 1️⃣ Checkout code
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -43,7 +43,7 @@ jobs:
         working-directory: terraform
         run: terraform apply -auto-approve
 
-      # 7️⃣ Get EC2 Public IP
+      # 7️⃣ Get EC2 public IP
       - name: Get EC2 Public IP
         working-directory: terraform
         run: echo "EC2_IP=$(terraform output -raw public_ip)" >> $GITHUB_ENV
@@ -55,21 +55,21 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 9️⃣ Build Docker Image
+      # 9️⃣ Build Docker image
       - name: Build Docker Image
         run: |
           IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/react-app
           docker build -t $IMAGE_NAME:latest .
 
-      # 🔟 Push Docker Image
+      # 🔟 Push Docker image
       - name: Push Docker Image
         run: |
           IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/react-app
           docker push $IMAGE_NAME:latest
 
-      # 1️⃣1️⃣ Setup SSH Agent
+      # 1️⃣1️⃣ Setup SSH agent (correct version)
       - name: Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.8.1
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 

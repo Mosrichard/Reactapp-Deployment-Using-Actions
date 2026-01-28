@@ -67,10 +67,10 @@ jobs:
           IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/react-app
           docker push $IMAGE_NAME:latest
 
-      # 1️⃣1️⃣ Deploy to EC2 using PEM key
+      # 1️⃣1️⃣ Deploy to EC2 using classic PEM key
       - name: Deploy to EC2
         run: |
-          # Write PEM private key to file
+          # Write PEM private key to file safely
           printf "%s\n" "${{ secrets.EC2_SSH_KEY }}" > mykey.pem
           chmod 600 mykey.pem
 
